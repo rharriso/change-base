@@ -6,6 +6,15 @@ mod tests {
     fn it_works() {
         assert_eq!(2 + 2, 4);
     }
+
+    // TODO: binary to base 10
+    // TODO: base 10 to binary without old base
+    // TODO: base 10 to binary with old base
+    // TODO: base 10 to hex without old base
+    // TODO: base 10 to hex with old base
+    // TODO: base 10 to 🚀🦉 binary without old base
+    // TODO: base 10 to 🚀🦉 binary with old base
+    // TODO: 🚀🦉 binary to hexadecimal
 }
 
 pub struct BaseChanger {
