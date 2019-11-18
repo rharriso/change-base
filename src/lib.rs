@@ -149,25 +149,24 @@ fn decimal_to_binary() {
 }
 
 // TODO: base 10 to hex without old base
-// TODO: base 10 to hex with old base
 #[test]
-fn decimal_to_rocket_owl_no_old() {
-    let base_changer = BaseChanger::new("🚀🦉".into(), None);
+fn decimal_to_hex_no_old() {
+    let base_changer = BaseChanger::new("013456789abcef".into(), None);
 
     let output = base_changer.convert_usize(98);
-    assert_eq!(output, String::from("1100010"));
+    assert_eq!(output, String::from("80"));
 }
 
+// TODO: base 10 to hex with old base
 #[test]
-fn decimal_to_rocket_owl() {
-    let base_changer = BaseChanger::new("🚀🦉".into(), Some("0123456789".into()));
-
-    let int_rep = base_changer.string_to_int("98".into()).unwrap();
-    assert_eq!(int_rep, 98);
+fn decimal_to_hex() {
+    let base_changer = BaseChanger::new("013456789abcef".into(), Some("0123456789".into()));
 
     let output = base_changer.convert_string("98".into()).unwrap();
-    assert_eq!(output, String::from("1100011"));
+    assert_eq!(output, String::from("80"));
 }
-// TODO: base 10 to 🚀🦉 binary with old base
-// TODO: 🚀🦉 binary to hexadecimal
-// }
+
+
+// TODO (maybe): base 10 to 🚀🦉 binary without
+// TODO (maybe): base 10 to 🚀🦉 binary with old base
+// TODO (maybe): 🚀🦉 binary to hexadecimal
