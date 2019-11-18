@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::convert::TryInto;
 
 pub struct BaseChanger {
     new_base_usize_map: HashMap<usize, char>,
@@ -65,7 +66,6 @@ impl BaseChanger {
                 .expect("Should not error out, size mismatch");
             output_string = format!("{}{}", character, output_string);
             curr_value = (curr_value - remainder) / self.new_base_size;
-            println!("{}", curr_value);
         }
 
         output_string
@@ -73,22 +73,23 @@ impl BaseChanger {
 
     fn string_to_int(&self, input_string: String) -> Result<usize, String> {
         match (self.old_base_size, &self.old_base_char_map) {
-            (Some(old_base_size), Some(old_base_char_map)) => input_string
-                .chars()
-                .rev()
-                .enumerate()
-                .fold(Ok(0), |maybe_acc, (i, c)| match maybe_acc {
+            (Some(old_base_size), Some(old_base_char_map)) => {
+                let reversed_chars = input_string.chars().rev();
+
+                reversed_chars.enumerate().fold(Ok(0), |maybe_acc, (i, c)| match maybe_acc {
                     Err(e) => Err(e),
                     Ok(acc) => {
                         let int_for_char =
-                            BaseChanger::char_to_int(c, old_base_char_map, old_base_size, i + 1);
+                            BaseChanger::char_to_int(c, old_base_char_map, old_base_size, i);
 
                         match int_for_char {
                             Ok(int_value) => Ok(acc + int_value),
                             Err(e) => Err(e),
                         }
                     }
-                }),
+
+                })
+            },
             _ => Err("OldBase undefined can't convert string.".into()),
         }
     }
@@ -100,7 +101,12 @@ impl BaseChanger {
         power: usize,
     ) -> Result<usize, String> {
         return match base_char_map.get(&c) {
-            Some(char_value) => Ok((base_size ^ power) * char_value),
+            Some(char_value) => {
+                match power.try_into() {
+                    Ok(power_32) => Ok(base_size.pow(power_32) * char_value),
+                    Err(_) => Err(format!("u32 overflowed at index: {}", power)),
+                }
+            },
             None => Err(format!("Couldn't find char in old_base: {}", c)),
         };
     }
@@ -112,19 +118,56 @@ fn it_works() {
     assert_eq!(2 + 2, 4);
 }
 
-// TODO: binary to base 10
 #[test]
 fn binary_to_decimal() {
     let base_changer = BaseChanger::new("0123456789".into(), Some("01".into()));
+
+    let int_rep = base_changer.string_to_int("1100011".into()).unwrap();
+    assert_eq!(int_rep, 99);
+
     let output = base_changer.convert_string("1100011".into()).unwrap();
     assert_eq!(output, String::from("99"));
 }
 
-// TODO: base 10 to binary without old base
-// TODO: base 10 to binary with old base
+#[test]
+fn decimal_to_binary_no_old() {
+    let base_changer = BaseChanger::new("01".into(), None);
+
+    let output = base_changer.convert_usize(98);
+    assert_eq!(output, String::from("1100010"));
+}
+
+#[test]
+fn decimal_to_binary() {
+    let base_changer = BaseChanger::new("01".into(), Some("0123456789".into()));
+
+    let int_rep = base_changer.string_to_int("99".into()).unwrap();
+    assert_eq!(int_rep, 99);
+
+    let output = base_changer.convert_string("99".into()).unwrap();
+    assert_eq!(output, String::from("1100011"));
+}
+
 // TODO: base 10 to hex without old base
 // TODO: base 10 to hex with old base
-// TODO: base 10 to 🚀🦉 binary without old base
+#[test]
+fn decimal_to_rocket_owl_no_old() {
+    let base_changer = BaseChanger::new("🚀🦉".into(), None);
+
+    let output = base_changer.convert_usize(98);
+    assert_eq!(output, String::from("1100010"));
+}
+
+#[test]
+fn decimal_to_rocket_owl() {
+    let base_changer = BaseChanger::new("🚀🦉".into(), Some("0123456789".into()));
+
+    let int_rep = base_changer.string_to_int("98".into()).unwrap();
+    assert_eq!(int_rep, 98);
+
+    let output = base_changer.convert_string("98".into()).unwrap();
+    assert_eq!(output, String::from("1100011"));
+}
 // TODO: base 10 to 🚀🦉 binary with old base
 // TODO: 🚀🦉 binary to hexadecimal
 // }
