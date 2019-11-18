@@ -1,22 +1,5 @@
 use std::collections::HashMap;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-
-    // TODO: binary to base 10
-    // TODO: base 10 to binary without old base
-    // TODO: base 10 to binary with old base
-    // TODO: base 10 to hex without old base
-    // TODO: base 10 to hex with old base
-    // TODO: base 10 to 🚀🦉 binary without old base
-    // TODO: base 10 to 🚀🦉 binary with old base
-    // TODO: 🚀🦉 binary to hexadecimal
-}
-
 pub struct BaseChanger {
     new_base_usize_map: HashMap<usize, char>,
     new_base_char_map: HashMap<char, usize>,
@@ -122,3 +105,26 @@ impl BaseChanger {
         };
     }
 }
+
+// mod tests {
+#[test]
+fn it_works() {
+    assert_eq!(2 + 2, 4);
+}
+
+// TODO: binary to base 10
+#[test]
+fn binary_to_decimal() {
+    let base_changer = BaseChanger::new("0123456789".into(), Some("01".into()));
+    let output = base_changer.convert_string("1100011".into()).unwrap();
+    assert_eq!(output, String::from("99"));
+}
+
+// TODO: base 10 to binary without old base
+// TODO: base 10 to binary with old base
+// TODO: base 10 to hex without old base
+// TODO: base 10 to hex with old base
+// TODO: base 10 to 🚀🦉 binary without old base
+// TODO: base 10 to 🚀🦉 binary with old base
+// TODO: 🚀🦉 binary to hexadecimal
+// }
